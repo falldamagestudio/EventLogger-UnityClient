@@ -31,7 +31,7 @@ namespace EventLogger
             keyValuePairs.Add(string.Format("\"SessionId\":\"{0}\"", sessionId));
             keyValuePairs.Add(string.Format("\"Type\":\"{0}\"", type));
             if (jsonData != null)
-                keyValuePairs.Add(string.Format("\"Type\":{0}", jsonData));
+                keyValuePairs.Add(string.Format("\"Data\":{0}", jsonData));
 
             string jsonEvent = string.Format("{{{0}}}", string.Join(",", keyValuePairs.ToArray()));
 
