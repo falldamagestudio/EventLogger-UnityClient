@@ -18,7 +18,7 @@ namespace EventLogger
                 diskLogger = new DiskLogger(diskLoggerConfig);
         }
 
-        public void Log(string sessionId, string type, string jsonData)
+        public void Log(string sessionId, int sequenceId, string type, string jsonData)
         {
             Assert.IsFalse(string.IsNullOrEmpty(type), "You must supply a type");
             Assert.IsFalse(string.IsNullOrEmpty(sessionId), "You must supply a Session ID");
@@ -29,6 +29,7 @@ namespace EventLogger
 
             keyValuePairs.Add(string.Format("\"SecondsSinceStartup\":{0}", secondsSinceStartup));
             keyValuePairs.Add(string.Format("\"SessionId\":\"{0}\"", sessionId));
+            keyValuePairs.Add(string.Format("\"SequenceId\":{0}", sequenceId));
             keyValuePairs.Add(string.Format("\"Type\":\"{0}\"", type));
             if (jsonData != null)
                 keyValuePairs.Add(string.Format("\"Data\":{0}", jsonData));

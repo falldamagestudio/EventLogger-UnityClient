@@ -7,6 +7,7 @@ namespace EventLogger
     {
         private readonly string sessionId;
         private readonly EventTransmitter transmitter;
+        private int sequenceId;
 
         private enum State
         {
@@ -69,6 +70,11 @@ namespace EventLogger
             LogJsonData(type, null);
         }
 
+        private int GetNextSequenceId()
+        {
+            return sequenceId++;
+        }
+
         public void LogJsonData(string type, string jsonData)
         {
             switch (state)
@@ -77,7 +83,7 @@ namespace EventLogger
                     Debug.LogWarningFormat("Cannot submit event {0} / {1}: session has not yet started", type, jsonData);
                     break;
                 case State.Started:
-                    transmitter.Log(sessionId, type, jsonData);
+                    transmitter.Log(sessionId, GetNextSequenceId(), type, jsonData);
                     break;
                 case State.Ended:
                     Debug.LogWarningFormat("Cannot submit event {0} / {1}: session has ended", type, jsonData);
@@ -94,7 +100,7 @@ namespace EventLogger
                     break;
                 case State.Started:
                     string jsonData = JsonUtility.ToJson(data);
-                    transmitter.Log(sessionId, type, jsonData);
+                    transmitter.Log(sessionId, GetNextSequenceId(), type, jsonData);
                     break;
                 case State.Ended:
                     Debug.LogWarningFormat("Cannot submit event {0} / {1}: session has ended", type, data);
