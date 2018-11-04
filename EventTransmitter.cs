@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.Assertions;
 
 namespace EventLogger
@@ -22,8 +23,11 @@ namespace EventLogger
             Assert.IsFalse(string.IsNullOrEmpty(type), "You must supply a type");
             Assert.IsFalse(string.IsNullOrEmpty(sessionId), "You must supply a Session ID");
 
+            string secondsSinceStartup = Time.realtimeSinceStartup.ToString();
+
             List<string> keyValuePairs = new List<string>();
 
+            keyValuePairs.Add(string.Format("\"SecondsSinceStartup\":{0}", secondsSinceStartup));
             keyValuePairs.Add(string.Format("\"SessionId\":\"{0}\"", sessionId));
             keyValuePairs.Add(string.Format("\"Type\":\"{0}\"", type));
             if (jsonData != null)
