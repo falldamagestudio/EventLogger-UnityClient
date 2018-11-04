@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Assertions;
 
@@ -18,27 +19,19 @@ namespace EventLogger
                 diskLogger = new DiskLogger(diskLoggerConfig);
         }
 
-        [Serializable]
-        private class Event
-        {
-            public string SessionId;
-            public string Type;
-            public object Data;
-
-            public Event(string sessionId, string type, object data)
-            {
-                SessionId = sessionId;
-                Type = type;
-                Data = data;
-            }
-        }
-
-        public void SubmitEvent(string sessionId, string type, object data)
+        public void Log(string sessionId, string type, string jsonData)
         {
             Assert.IsFalse(string.IsNullOrEmpty(type), "You must supply a type");
             Assert.IsFalse(string.IsNullOrEmpty(sessionId), "You must supply a Session ID");
-            Event e = new Event(sessionId, type, data);
-            string jsonEvent = JsonUtility.ToJson(e);
+
+            List<string> keyValuePairs = new List<string>();
+
+            keyValuePairs.Add(string.Format("\"SessionId\":\"{0}\"", sessionId));
+            keyValuePairs.Add(string.Format("\"Type\":\"{0}\"", type));
+            if (jsonData != null)
+                keyValuePairs.Add(string.Format("\"Type\":{0}", jsonData));
+
+            string jsonEvent = string.Format("{{{0}}}", string.Join(",", keyValuePairs.ToArray()));
 
             if (backendTransmitter != null)
                 backendTransmitter.Log(jsonEvent);

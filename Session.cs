@@ -36,7 +36,7 @@ namespace EventLogger
             {
                 case State.NotStarted:
                     state = State.Started;
-                    SubmitEvent("BeginSession", null);
+                    LogJsonData("BeginSession", null);
                     break;
                 case State.Started:
                     Debug.LogWarningFormat("Attempted to begin session when it already had started");
@@ -55,7 +55,7 @@ namespace EventLogger
                     Debug.LogWarningFormat("Attempted to end session before it had started");
                     break;
                 case State.Started:
-                    SubmitEvent("EndSession", null);
+                    LogJsonData("EndSession", null);
                     state = State.Ended;
                     break;
                 case State.Ended:
@@ -64,7 +64,23 @@ namespace EventLogger
             }
         }
 
-        public void SubmitEvent(string type, object data)
+        public void LogJsonData(string type, string jsonData)
+        {
+            switch (state)
+            {
+                case State.NotStarted:
+                    Debug.LogWarningFormat("Cannot submit event {0} / {1}: session has not yet started", type, jsonData);
+                    break;
+                case State.Started:
+                    transmitter.Log(sessionId, type, jsonData);
+                    break;
+                case State.Ended:
+                    Debug.LogWarningFormat("Cannot submit event {0} / {1}: session has ended", type, jsonData);
+                    break;
+            }
+        }
+
+        public void LogSerializableObject(string type, object data)
         {
             switch (state)
             {
@@ -72,7 +88,8 @@ namespace EventLogger
                     Debug.LogWarningFormat("Cannot submit event {0} / {1}: session has not yet started", type, data);
                     break;
                 case State.Started:
-                    transmitter.SubmitEvent(sessionId, type, data);
+                    string jsonData = JsonUtility.ToJson(data);
+                    transmitter.Log(sessionId, type, jsonData);
                     break;
                 case State.Ended:
                     Debug.LogWarningFormat("Cannot submit event {0} / {1}: session has ended", type, data);

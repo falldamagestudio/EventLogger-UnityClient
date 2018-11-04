@@ -231,14 +231,14 @@ namespace EventLogger
             //   ( so {"a":"b"} turns into %7b%22a%22:%22b%22%7d )
             // To get around this, we provide a handler that will send a text string with the appropriate content type
             request.uploadHandler = new UploadHandlerRaw(messageUtf8);
-            request.uploadHandler.contentType = "text/plain; charset=utf-8";
+            request.uploadHandler.contentType = "application/json; charset=utf-8";
 
             return request;
         }
 
         private void PublishEvents(List<string> eventsToPublish, out UnityWebRequest webRequest, out UnityWebRequestAsyncOperation webAsyncOperation)
         {
-            string message = string.Join("", eventsToPublish.Select(e => e + "\n").ToArray());
+            string message = string.Format("[{0}]", string.Join(",", eventsToPublish.ToArray()));
 
             webRequest = CreateUnityWebRequest(config.BackendUrl, message);
             webAsyncOperation = webRequest.SendWebRequest();
