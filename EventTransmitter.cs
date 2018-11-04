@@ -28,8 +28,8 @@ namespace EventLogger
             List<string> keyValuePairs = new List<string>();
 
             keyValuePairs.Add(string.Format("\"SecondsSinceStartup\":{0}", secondsSinceStartup));
-            keyValuePairs.Add(string.Format("\"SessionId\":\"{0}\"", sessionId));
-            keyValuePairs.Add(string.Format("\"SequenceId\":{0}", sequenceId));
+            keyValuePairs.Add(string.Format("\"Session\":\"{0}\"", sessionId));
+            keyValuePairs.Add(string.Format("\"Sequence\":{0}", sequenceId));
             keyValuePairs.Add(string.Format("\"Type\":\"{0}\"", type));
             if (jsonData != null)
                 keyValuePairs.Add(string.Format("\"Data\":{0}", jsonData));
