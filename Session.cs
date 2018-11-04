@@ -64,6 +64,11 @@ namespace EventLogger
             }
         }
 
+        public void Log(string type)
+        {
+            LogJsonData(type, null);
+        }
+
         public void LogJsonData(string type, string jsonData)
         {
             switch (state)
