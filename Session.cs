@@ -37,7 +37,7 @@ namespace EventLogger
             {
                 case State.NotStarted:
                     state = State.Started;
-                    LogJsonData("BeginSession", null);
+                    Log("BeginSession");
                     break;
                 case State.Started:
                     Debug.LogWarningFormat("Attempted to begin session when it already had started");
@@ -56,7 +56,7 @@ namespace EventLogger
                     Debug.LogWarningFormat("Attempted to end session before it had started");
                     break;
                 case State.Started:
-                    LogJsonData("EndSession", null);
+                    Log("EndSession");
                     state = State.Ended;
                     break;
                 case State.Ended:
@@ -67,7 +67,7 @@ namespace EventLogger
 
         public void Log(string type)
         {
-            LogJsonData(type, null);
+            Log(type, null);
         }
 
         private int GetNextSequenceId()
@@ -75,35 +75,36 @@ namespace EventLogger
             return sequenceId++;
         }
 
-        public void LogJsonData(string type, string jsonData)
+        public void Log(string type, string jsonData)
         {
             switch (state)
             {
                 case State.NotStarted:
-                    Debug.LogWarningFormat("Cannot submit event {0} / {1}: session has not yet started", type, jsonData);
+                    Debug.LogWarningFormat("Cannot submit event {0}: session has not yet started", type);
                     break;
                 case State.Started:
+                    // TODO: validate that jsonData is valid JSON
                     transmitter.Log(sessionId, GetNextSequenceId(), type, jsonData);
                     break;
                 case State.Ended:
-                    Debug.LogWarningFormat("Cannot submit event {0} / {1}: session has ended", type, jsonData);
+                    Debug.LogWarningFormat("Cannot submit event {0}: session has ended", type);
                     break;
             }
         }
 
-        public void LogSerializableObject(string type, object data)
+        public void Log<LogEventType>(LogEventType logEvent) where LogEventType : LogEvent
         {
             switch (state)
             {
                 case State.NotStarted:
-                    Debug.LogWarningFormat("Cannot submit event {0} / {1}: session has not yet started", type, data);
+                    Debug.LogWarningFormat("Cannot submit event {0}: session has not yet started", typeof(LogEventType).Name);
                     break;
                 case State.Started:
-                    string jsonData = JsonUtility.ToJson(data);
-                    transmitter.Log(sessionId, GetNextSequenceId(), type, jsonData);
+                    string jsonData = JsonUtility.ToJson(logEvent);
+                    transmitter.Log(sessionId, GetNextSequenceId(), typeof(LogEventType).Name, jsonData);
                     break;
                 case State.Ended:
-                    Debug.LogWarningFormat("Cannot submit event {0} / {1}: session has ended", type, data);
+                    Debug.LogWarningFormat("Cannot submit event {0}: session has ended", typeof(LogEventType).Name);
                     break;
             }
         }
