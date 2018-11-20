@@ -23,7 +23,7 @@ namespace EventLogger
             Assert.IsFalse(string.IsNullOrEmpty(type), "You must supply a type");
             Assert.IsFalse(string.IsNullOrEmpty(sessionId), "You must supply a Session ID");
 
-            string secondsSinceStartup = Time.realtimeSinceStartup.ToString();
+            string secondsSinceStartup = Time.realtimeSinceStartup.ToString(CultureInfo.InvariantCulture);
 
             List<string> keyValuePairs = new List<string>();
 
